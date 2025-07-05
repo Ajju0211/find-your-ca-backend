@@ -8,7 +8,7 @@ export class BlogCron {
 
   constructor(private readonly blogService: BlogModelService) {}
 
-  @Cron('*/10 * * * *') // every 1 min
+  @Cron('0 */8 * * *') // every 8 hours
   async handleBlogCron() {
     this.logger.log('🕒 Running scheduled blog creation json...');
     this.blogService.createAndSaveBlog();
