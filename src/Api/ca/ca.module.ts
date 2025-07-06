@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
-import { CaService } from './ca.service';
+import { MongooseModule } from '@nestjs/mongoose';
 import { CaController } from './ca.controller';
-import { MongooseModule, Schema } from '@nestjs/mongoose';
+import { CaService } from './ca.service';
 import { Ca, CaSchema } from './schema/ca.schema';
 
 @Module({

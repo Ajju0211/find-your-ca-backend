@@ -12,92 +12,109 @@ import {
 import { Type } from 'class-transformer';
 import { CaFirmType, PlanType } from '../schema/ca.schema';
 
-
 // ====================== COMMON FIELDS DTO ======================
 
-class CommonFieldsDto {
+class UpdateCommonFieldsDto {
+  @IsOptional()
   @IsString()
   @Matches(/^[0-9]{10}$/)
-  phone: string;
+  phone?: string;
 
   @IsOptional()
   @IsString()
   alternative_phone?: string;
 
+  @IsOptional()
   @IsString()
-  main_address: string;
+  main_address?: string;
 
   @IsOptional()
   @IsString()
   alternative_address?: string;
 
+  @IsOptional()
   @IsString()
-  city: string;
+  city?: string;
 
+  @IsOptional()
   @IsString()
-  pincode: string;
+  pincode?: string;
 
+  @IsOptional()
   @IsString()
-  profile_picture: string;
+  profile_picture?: string;
 }
 
 // ====================== FORM TYPES DTO ======================
 
-export class IndividualFormDto extends CommonFieldsDto {
+export class UpdateIndividualFormDto extends UpdateCommonFieldsDto {
+  @IsOptional()
   @IsString()
-  first_name: string;
-
-  @IsString()
-  last_name: string;
-
-  @IsString()
-  firm_name: string;
-}
-
-export class PartnershipFormDto extends CommonFieldsDto {
-  @IsString()
-  firm_name: string;
-
-  @IsString()
-  partner_name: string;
-}
-
-export class AdvisoryFormDto extends CommonFieldsDto {
-  @IsString()
-  advisory_name: string;
+  first_name?: string;
 
   @IsOptional()
   @IsString()
-  incharge: string;
+  last_name?: string;
+
+  @IsOptional()
+  @IsString()
+  firm_name?: string;
 }
 
-export class LlpFormDto extends CommonFieldsDto {
+export class UpdatePartnershipFormDto extends UpdateCommonFieldsDto {
+  @IsOptional()
   @IsString()
-  firm_name: string;
+  firm_name?: string;
 
+  @IsOptional()
   @IsString()
-  partner_name: string;
+  partner_name?: string;
+}
+
+export class UpdateAdvisoryFormDto extends UpdateCommonFieldsDto {
+  @IsOptional()
+  @IsString()
+  advisory_name?: string;
+
+  @IsOptional()
+  @IsString()
+  incharge?: string;
+}
+
+export class UpdateLlpFormDto extends UpdateCommonFieldsDto {
+  @IsOptional()
+  @IsString()
+  firm_name?: string;
+
+  @IsOptional()
+  @IsString()
+  partner_name?: string;
 }
 
 // ====================== PLAN & EXPERTISE DTO ======================
 
-export class PlanAndExpertiseDto {
+export class UpdatePlanAndExpertiseDto {
+  @IsOptional()
   @IsEnum(PlanType)
-  plan_type: PlanType;
+  plan_type?: PlanType;
 
+  @IsOptional()
   @IsNumber()
-  price: number;
+  price?: number;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  features: string[];
+  features?: string[];
 
+  @IsOptional()
   @IsString()
-  industry: string;
+  industry?: string;
 
+  @IsOptional()
   @IsArray()
   @IsString({ each: true })
-  basic_services: string[];
+  basic_services?: string[];
 
   @IsOptional()
   @IsArray()
@@ -105,29 +122,34 @@ export class PlanAndExpertiseDto {
   advanced_services?: string[];
 }
 
-// ====================== CREATE CA DTO ======================
+// ====================== UPDATE CA DTO ======================
 
-export class CreateCaDto {
+export class UpdateCaDto {
+  @IsOptional()
   @IsEnum(CaFirmType)
-  type: CaFirmType;
+  type?: CaFirmType;
 
+  @IsOptional()
   @ValidateNested()
   @Type(() => Object)
-  form_data:
-    | IndividualFormDto
-    | PartnershipFormDto
-    | AdvisoryFormDto
-    | LlpFormDto;
+  form_data?:
+    | UpdateIndividualFormDto
+    | UpdatePartnershipFormDto
+    | UpdateAdvisoryFormDto
+    | UpdateLlpFormDto;
 
+  @IsOptional()
   @ValidateNested()
-  @Type(() => PlanAndExpertiseDto)
-  plan_and_expertise: PlanAndExpertiseDto;
+  @Type(() => UpdatePlanAndExpertiseDto)
+  plan_and_expertise?: UpdatePlanAndExpertiseDto;
 
+  @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
+  @IsOptional()
   @IsString()
-  password: string;
+  password?: string;
 
   @IsOptional()
   @IsString()
