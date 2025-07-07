@@ -9,6 +9,12 @@ import { CaModule } from './Api/ca/ca.module';
 import { ContactModule } from './Api/contact-us/contact.module';
 import { TestimonialModule } from './Api/testimonial/testimonial.module';
 import { FiltersModule } from './Api/filters/filters.module';
+import { UserModule } from './Api/user/user.module';
+import { UploadModule } from './upload/upload.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { MailModule } from './emails/mail.module';
+import { ReviewsModule } from './Api/reviews/reviews.module';
 
 @Module({
   imports: [
@@ -17,14 +23,22 @@ import { FiltersModule } from './Api/filters/filters.module';
       envFilePath: '.env', // optional, default is .env
     }),
     MongooseModule.forRoot(
-      'mongodb+srv://ajaysdoriyal:ajaysdoriyal@cluster0.iz0lg.mongodb.net/llm-blog-data?retryWrites=true&w=majority&appName=Cluster0',
+      process.env.MONGO_DB_URL || 'mongodb://localhost:27017/your-default-db', // Use environment variable or default
     ),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'uploads'), // Path to the folder
+      serveRoot: '/uploads', // URL prefix to serve static files
+    }),
     ScheduleModule.forRoot(), // 🆕 Added to enable cron jobs
     BlogModelModule,
+    UserModule,
+    MailModule,
     CaModule,
+    UploadModule,
+    ReviewsModule,
     ContactModule,
     TestimonialModule,
-    FiltersModule
+    FiltersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

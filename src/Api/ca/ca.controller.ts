@@ -3,10 +3,15 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
+  NotFoundException,
   Param,
+  Patch,
   Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { CaService } from './ca.service';
 import { CreateCaDto } from './dto/create-ca.dto';
@@ -14,17 +19,17 @@ import { Ca } from './schema/ca.schema';
 import { getFormDtoClass } from '../utils/form-type-mapper';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { UpdateCaDto } from './dto/update-ca.dto';
 
 @Controller('ca')
 export class CaController {
-  constructor(private readonly caService: CaService) { }
+  constructor(private readonly caService: CaService) {}
 
   /**
    * @route POST /ca
    * @desc Creates a new CA firm after validating form_data dynamically based on CA firm type
    */
   @Post()
-
   async signUp(@Body() body: any) {
     // Dynamically get the form DTO class based on firm type
     const FormDto = getFormDtoClass(body.type);
@@ -44,7 +49,18 @@ export class CaController {
     return this.caService.signUp(caDto);
   }
 
+  /**
+   * @route GET /api/ca/:id
+   */
 
+  @Patch('update/:id')
+  async updateCa(
+    @Param('id') id: string,
+    @Body() updateCaDto: UpdateCaDto,
+    @Req() req: Request & { user?: any },
+  ) {
+    return this.caService.updateCa(id, updateCaDto);
+  }
   /**
    * @route GET /ca
    * @desc Returns a list of all CA firms
@@ -65,7 +81,6 @@ export class CaController {
   async findVerified(): Promise<Ca[]> {
     return this.caService.findVerified();
   }
-
 
   /**
    * @route GET /ca/filter

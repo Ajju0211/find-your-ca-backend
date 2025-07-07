@@ -6,17 +6,19 @@ import { AuthService } from './auth.service';
 import { UserModule } from 'src/Api/user/user.module';
 import { RolesGuard } from '../permissions/roles.guard';
 
-
 @Module({
   imports: [
     PassportModule,
     JwtModule.register({
-      secret: process.env.JWT_SECRET,
+      secret: 'YourSecretKey', // Use a secure secret key
       signOptions: { expiresIn: '7d' },
     }),
     UserModule,
   ],
   providers: [AuthService, JwtStrategy, RolesGuard],
-  exports: [AuthService],
+  exports: [
+    AuthService,
+    JwtModule, // ✅ this is the missing piece
+  ],
 })
 export class AuthModule {}

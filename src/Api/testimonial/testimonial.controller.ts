@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { TestimonialService } from './testimonial.service';
 import { CreateTestimonialDto } from './dto/create-testimonial.dto';
 
-@Controller('testimonial')
+@Controller('testimonials')
 export class TestimonialController {
   constructor(private readonly service: TestimonialService) {}
 

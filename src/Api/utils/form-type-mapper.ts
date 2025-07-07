@@ -4,9 +4,7 @@ import {
   AdvisoryFormDto,
   LlpFormDto,
 } from 'src/Api/ca/dto/create-ca.dto';
-import { CaFirmType } from '../ca/schema/ca.schema';
-
-
+import { CaFirmType } from 'src/enum/enum';
 
 export function getFormDtoClass(type: CaFirmType): any {
   switch (type) {

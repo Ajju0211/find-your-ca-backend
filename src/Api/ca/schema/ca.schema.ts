@@ -1,21 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Schema as MongooseSchema } from 'mongoose';
+import { CaFirmType, PlanType } from 'src/enum/enum';
 
 export type CaDocument = Ca & Document;
 
 // ====================== ENUMS ======================
-
-export enum CaFirmType {
-  INDIVIDUAL = 'individual',
-  LLP = 'llp',
-  PARTNERSHIP = 'partnership',
-  ADVISORY = 'advisory',
-}
-
-export enum PlanType {
-  BASIC = 'basic',
-  ADVANCE = 'advance',
-}
 
 // ====================== COMMON FIELDS ======================
 
@@ -51,14 +40,13 @@ class CommonFields {
 
 @Schema({ _id: false })
 class IndividualForm extends CommonFields {
-
   @Prop({ required: true })
   first_name: string;
 
   @Prop({ required: true })
   last_name: string;
 
-   @Prop({ required: true })
+  @Prop({ required: true })
   firm_name: string;
 }
 
@@ -131,10 +119,10 @@ export class Ca {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true, select: false})
+  @Prop({ required: true, select: false })
   password: string;
 
-   // After sign-up Fields (Place them here)
+  // After sign-up Fields (Place them here)
   @Prop()
   frn_number?: string;
 
@@ -152,7 +140,16 @@ export class Ca {
   role: string;
 
   @Prop({ default: false })
+  website: string;
+
+  @Prop({ default: false })
+  about_us: string;
+
+  @Prop({ default: false })
   isApproved: boolean;
+
+  @Prop({ default: [], type: [String] })
+  reviews: string[];
 }
 
 export const CaSchema = SchemaFactory.createForClass(Ca);

@@ -10,8 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CaFirmType, PlanType } from '../schema/ca.schema';
-
+import { CaFirmType, PlanType } from 'src/enum/enum';
 
 // ====================== COMMON FIELDS DTO ======================
 
@@ -152,6 +151,18 @@ export class CreateCaDto {
   role?: string;
 
   @IsOptional()
+  @IsString()
+  website?: string;
+
+  @IsOptional()
+  @IsString()
+  about_us?: string;
+
+  @IsOptional()
   @IsBoolean()
   isApproved?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  reviews?: string[];
 }

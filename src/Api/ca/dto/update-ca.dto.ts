@@ -10,7 +10,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CaFirmType, PlanType } from '../schema/ca.schema';
+import { CaFirmType, PlanType } from 'src/enum/enum';
 
 // ====================== COMMON FIELDS DTO ======================
 

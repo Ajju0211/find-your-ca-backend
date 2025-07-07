@@ -1,6 +1,7 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Res } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './types/types';
 
 @Controller('user')
 export class UserController {
@@ -12,7 +13,7 @@ export class UserController {
   }
 
   @Post('login')
-  login(@Body('phone') phone: string) {
-    return this.userService.login(phone);
+  login(@Body() data: LoginDto) {
+    return this.userService.login(data);
   }
 }
