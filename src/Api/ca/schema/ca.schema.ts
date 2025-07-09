@@ -112,14 +112,14 @@ export class Ca {
   form_data: IndividualForm | PartnershipForm | AdvisoryForm | LlpForm;
 
   // Step 2: Form
-  @Prop({ type: PlanAndExpertise, required: true })
-  plan_and_expertise: PlanAndExpertise;
+  @Prop({ type: PlanAndExpertise })
+  plan_and_expertise?: PlanAndExpertise;
 
   // Step 3: Signup/Login
-  @Prop({ required: true, unique: true })
+  @Prop({ unique: true })
   email: string;
 
-  @Prop({ required: true, select: false })
+  @Prop({ select: false })
   password: string;
 
   // After sign-up Fields (Place them here)
@@ -150,6 +150,15 @@ export class Ca {
 
   @Prop({ default: [], type: [String] })
   reviews: string[];
+
+  @Prop({ required: true, type: String })
+  tempId: string; // Temporary ID for form progress
+
+  @Prop({ required: true, type: Number, default: 1 })
+  form_step_progress: number; // Step progress (1, 2, 3,
+
+  @Prop({ type: [Number], default: [] })
+  completed_steps: number[];
 }
 
 export const CaSchema = SchemaFactory.createForClass(Ca);

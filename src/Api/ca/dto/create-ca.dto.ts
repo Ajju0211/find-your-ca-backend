@@ -11,6 +11,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CaFirmType, PlanType } from 'src/enum/enum';
+import { Optional } from '@nestjs/common';
 
 // ====================== COMMON FIELDS DTO ======================
 
@@ -118,13 +119,16 @@ export class CreateCaDto {
     | AdvisoryFormDto
     | LlpFormDto;
 
+  @IsOptional()
   @ValidateNested()
   @Type(() => PlanAndExpertiseDto)
   plan_and_expertise: PlanAndExpertiseDto;
 
+  @IsOptional()
   @IsEmail()
   email: string;
 
+  @IsOptional()
   @IsString()
   password: string;
 
@@ -165,4 +169,15 @@ export class CreateCaDto {
   @IsOptional()
   @IsArray()
   reviews?: string[];
+
+  @IsString()
+  tempId: string;
+
+  // ✅ NEW: Step progress (1, 2, 3, etc.)
+  @IsNumber()
+  form_step_progress: number;
+
+  @IsOptional()
+  @IsArray()
+  completed_steps: number[];
 }

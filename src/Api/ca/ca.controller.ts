@@ -20,17 +20,21 @@ import { getFormDtoClass } from '../utils/form-type-mapper';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { UpdateCaDto } from './dto/update-ca.dto';
+import { Step3Dto } from './dto/step3.dto';
+import { Step2Dto } from './dto/step2.dto';
 
 @Controller('ca')
 export class CaController {
   constructor(private readonly caService: CaService) {}
 
   /**
+   * Step 1: Sign up a new CA firm
+   * This endpoint dynamically validates the form_data based on the CA firm type
    * @route POST /ca
    * @desc Creates a new CA firm after validating form_data dynamically based on CA firm type
    */
   @Post()
-  async signUp(@Body() body: any) {
+  async fillFormStep1(@Body() body: any) {
     // Dynamically get the form DTO class based on firm type
     const FormDto = getFormDtoClass(body.type);
 
@@ -50,9 +54,40 @@ export class CaController {
   }
 
   /**
-   * @route GET /api/ca/:id
+   * Update CA information step-by-step using tempId
    */
+  @Patch('progress/step2')
+  async updateProgress(@Body() dto: Step2Dto): Promise<Partial<Ca>> {
+    if (!dto.tempId) {
+      throw new BadRequestException('tempId is required');
+    }
 
+    return this.caService.updateStep2ByTempId(dto.tempId, dto);
+  }
+
+  /**
+   * @route PATCH /ca/progress/step3
+   * @desc Completes Step 3 of CA form - Signup/Login
+   * This is called when user submits email/password after filling form
+   */
+  @Patch('/progress/step3')
+  async completeStep3(@Body() dto: Step3Dto): Promise<Ca> {
+    return this.caService.completeStep3(dto);
+  }
+
+  // ✅ GET /ca/progress/:tempId → Fetch saved form
+  @Get('progress/:tempId')
+  async getProgress(@Param('tempId') tempId: string): Promise<Partial<Ca>> {
+    return await this.caService.findByTempId(tempId);
+  }
+
+  /**
+   * @route PATCH /ca/update/:id
+   * @desc Updates a CA firm by ID
+   * @param id - The ID of the CA firm to update
+   * @param updateCaDto - The data to update the CA firm with
+   * @returns The updated CA firm
+   */
   @Patch('update/:id')
   async updateCa(
     @Param('id') id: string,
@@ -61,6 +96,7 @@ export class CaController {
   ) {
     return this.caService.updateCa(id, updateCaDto);
   }
+
   /**
    * @route GET /ca
    * @desc Returns a list of all CA firms

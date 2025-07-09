@@ -176,4 +176,13 @@ export class UpdateCaDto {
   @IsOptional()
   @IsBoolean()
   isApproved?: boolean;
+
+  @IsOptional()
+  @IsString()
+  tempId: string;
+
+  // ✅ NEW: Step progress (1, 2, 3, etc.)
+  @IsOptional()
+  @IsNumber()
+  form_step_progress: number;
 }
