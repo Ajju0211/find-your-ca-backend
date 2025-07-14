@@ -12,13 +12,7 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     credentials: true,
   });
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,             // ✅ Automatically converts payloads to DTO instances
-      whitelist: true,             // ✅ Strips unknown properties
-      forbidNonWhitelisted: true,  // ✅ Throws if unknown fields are sent
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe());
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.use(cookieParser());
   app.setGlobalPrefix('api');

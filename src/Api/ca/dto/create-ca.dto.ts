@@ -31,10 +31,16 @@ class CommonFieldsDto {
   alternative_address?: string;
 
   @IsString()
+  pincode: string;
+
+  @IsString()
   city: string;
 
   @IsString()
-  pincode: string;
+  state: string;
+
+  @IsString()
+  location: string;
 
   @IsString()
   profile_picture: string;

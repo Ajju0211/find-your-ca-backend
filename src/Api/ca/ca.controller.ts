@@ -17,10 +17,11 @@ import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
 import { Step1Dto } from './dto/step1.dto';
 import { VerifiedCA } from './types/ca.types';
+import { validateFormDataByType } from '../utils/validate-form-data';
 
 @Controller('ca')
 export class CaController {
-  constructor(private readonly caService: CaService) { }
+  constructor(private readonly caService: CaService) {}
 
   /**
    * @route POST /ca/registration/step1
@@ -29,6 +30,17 @@ export class CaController {
    */
   @Post('registration/step1')
   async fillFormStep1(@Body() body: Step1Dto) {
+    const { type, form_data, ...rest } = body;
+
+    // ✅ Validate form_data manually
+    const validatedFormData = await validateFormDataByType(type, form_data);
+
+    // Now continue processing
+    const finalData = {
+      ...rest,
+      type,
+      form_data: validatedFormData,
+    };
     return this.caService.submitFirmInfo(body);
   }
 
@@ -68,10 +80,7 @@ export class CaController {
    * @desc Updates CA firm data by MongoDB _id (used post-registration)
    */
   @Patch('update/:id')
-  async updateCa(
-    @Param('id') id: string,
-    @Body() updateCaDto: UpdateCaDto,
-  ) {
+  async updateCa(@Param('id') id: string, @Body() updateCaDto: UpdateCaDto) {
     return this.caService.updateCa(id, updateCaDto);
   }
 

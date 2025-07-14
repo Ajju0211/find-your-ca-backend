@@ -12,7 +12,6 @@ export type CaDocument = Ca & Document;
 class CommonFields {
   @Prop({
     required: true,
-    unique: true,
     match: /^[0-9]{10}$/, // Valid 10-digit number
   })
   phone: string;
@@ -116,7 +115,7 @@ export class Ca {
   plan_and_expertise?: PlanAndExpertise;
 
   // Step 3: Signup/Login
-  @Prop({ unique: true, sparse: true })
+  @Prop()
   email?: string;
 
   @Prop({ select: false })
@@ -162,3 +161,13 @@ export class Ca {
 }
 
 export const CaSchema = SchemaFactory.createForClass(Ca);
+
+CaSchema.index(
+  { email: 1 },
+  { unique: true, partialFilterExpression: { email: { $type: 'string' } } },
+);
+
+CaSchema.index(
+  { phone: 1 },
+  { unique: true, partialFilterExpression: { phone: { $type: 'string' } } },
+);
