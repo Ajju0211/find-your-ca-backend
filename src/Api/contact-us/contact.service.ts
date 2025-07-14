@@ -18,7 +18,7 @@ export class ContactService {
   }
 
   async findOne(id: string): Promise<Contact> {
-    return this.contactModel.findById(id).exec() as any;
+    return this.contactModel.findById(id).exec() as any ;
   }
 
   async delete(id: string): Promise<{ deleted: boolean }> {

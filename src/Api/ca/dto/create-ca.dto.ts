@@ -11,7 +11,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CaFirmType, PlanType } from 'src/enum/enum';
-import { Optional } from '@nestjs/common';
 
 // ====================== COMMON FIELDS DTO ======================
 
@@ -126,7 +125,7 @@ export class CreateCaDto {
 
   @IsOptional()
   @IsEmail()
-  email: string;
+  email?: string;
 
   @IsOptional()
   @IsString()

@@ -1,5 +1,5 @@
 // step1.dto.ts
-import { IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEmpty, IsEnum, IsNumber, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CaFirmType } from 'src/enum/enum';
 import {
@@ -14,7 +14,6 @@ export class Step1Dto {
   type: CaFirmType;
 
   @ValidateNested()
-  @Type(() => Object)
   form_data:
     | IndividualFormDto
     | PartnershipFormDto
@@ -26,4 +25,7 @@ export class Step1Dto {
 
   @IsNumber()
   form_step_progress: number;
+
+  @IsArray()
+  completed_steps: number[]
 }

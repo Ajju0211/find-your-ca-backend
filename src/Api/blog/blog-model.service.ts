@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { generateBlogFromLLM } from './llm/llm.model';
 import { Ca } from '../ca/schema/ca.schema';
+import { BlogType } from './interface/blog.interface';
 
 @Injectable()
 export class BlogModelService {
@@ -11,18 +12,11 @@ export class BlogModelService {
     @InjectModel(Ca.name) private caModel: Model<Ca>,
     @InjectModel(Blog.name) private blogModel: Model<BlogDocument>,
   ) {}
+// blog.service.ts
+async getBlogs(limit = 12, skip = 0): Promise<BlogType[]> {
+  return this.blogModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean().exec() as any;
+}
 
-  /**
-   * Get 10 blog at a time
-   */
-  async getBlogs(limit = 12, skip = 0) {
-    return this.blogModel
-      .find()
-      .sort({ createdAt: -1 }) // newest first
-      .skip(skip) // skip previous blogs for pagination
-      .limit(limit) // limit to 10 (or what you pass)
-      .exec();
-  }
 
   // Get Blog By Id
   async getBlogsById(id: string): Promise<Blog> {

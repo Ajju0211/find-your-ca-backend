@@ -2,37 +2,38 @@ import {
   Injectable,
   NotFoundException,
   BadRequestException,
-  ForbiddenException,
+
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Ca, CaDocument } from './schema/ca.schema';
-import { Model } from 'mongoose';
-import { CreateCaDto } from './dto/create-ca.dto';
+import { Model, Types } from 'mongoose';
+
 import { UpdateCaDto } from './dto/update-ca.dto';
 import { Roles } from 'src/permissions/roles.decorator';
-import * as bcrypt from 'bcrypt';
-import { PlanType } from 'src/enum/enum';
 import { MailService } from 'src/emails/mail.service';
 import { Step1Dto } from './dto/step1.dto';
 import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
+import { PasswordService } from 'src/common/service/password.service';
+import {  StepResponse, VerifiedCA } from './types/ca.types';
 @Injectable()
 export class CaService {
   constructor(
     @InjectModel(Ca.name) private readonly caModel: Model<CaDocument>,
+    private readonly passwordService: PasswordService,
     private readonly mailService: MailService, // Assuming you have a MailService for sending emails
-  ) {}
+  ) { }
 
   /**
    * Complete Step 3 of CA form - Signup/Login
    * This is called when user submits email/password after filling form
    */
-  async completeStep3(dto: Step3Dto): Promise<Ca> {
+  async submitLoginCredentials(dto: Step3Dto): Promise<CaDocument> {
     const ca = await this.caModel.findOne({ tempId: dto.tempId });
     if (!ca) throw new NotFoundException('Form not found');
 
     // ✅ Hash password
-    const hashedPassword = await bcrypt.hash(dto.password, 10);
+    const hashed = await this.passwordService.hash(dto.password);
 
     // ✅ Update with Step 3 data
     await this.caModel.updateOne(
@@ -40,42 +41,50 @@ export class CaService {
       {
         $set: {
           email: dto.email,
-          password: hashedPassword,
+          password: hashed,
           form_step_progress: 3,
         },
         $addToSet: { completed_steps: 3 },
       },
     );
 
-    return this.caModel.findOne({ tempId: dto.tempId }).lean() as any;
+    const response = await this.caModel.findOne({ tempId: dto.tempId }) as CaDocument
+    return response
   }
 
   /**
    * Create a new CA Firm
    */
-  async signUp(createCaDto: Step1Dto): Promise<Ca> {
-    // ✅ Check for existing phone number
+  async submitFirmInfo(createCaDto: Step1Dto): Promise<StepResponse> {
+    // Check if phone exists
     const phoneExists = await this.findByPhone(createCaDto.form_data.phone);
     if (phoneExists) {
       throw new BadRequestException('Phone number already in use');
     }
 
-    // ✅ Replace plain password with hashed one
-    const caToSave = new this.caModel({
-      ...createCaDto,
-    });
+    // ✅ Clean DTO to avoid undefined fields
+    const cleanData = JSON.parse(JSON.stringify(createCaDto)); // Removes undefined
 
-    return await caToSave.save();
+    const caToSave = new this.caModel(cleanData);
+    const response = {
+      success: true,
+      message: 'Step 1 completed',
+      form_step_progress: 1,
+      tempId: 'abc123',
+    }
+
+    return response;
   }
+
 
   /**
    * Update Step 2 (Plan and Expertise) by Temp ID
    * Used to update form progress for step 2 specifically
    */
-  async updateStep2ByTempId(
+  async submitExpertise(
     tempId: string,
     dto: Step2Dto,
-  ): Promise<Partial<Ca>> {
+  ): Promise<StepResponse> {
     const existing = await this.caModel.findOne({ tempId });
 
     if (!existing) {
@@ -99,10 +108,14 @@ export class CaService {
     );
 
     // Return updated document (sanitized)
-    const updated = await this.caModel.findOne({ tempId }).lean();
+    const response = {
+      success: true,
+      message: 'Step 2 updated',
+      form_step_progress: 2,
+      completed_steps: [1, 2],
+    }
 
-    const { ...safeData } = updated;
-    return safeData;
+    return response;
   }
 
   /**
@@ -139,7 +152,7 @@ export class CaService {
       );
     }
 
-    const { password, ...sanitized } = updatedCa as any;
+    const { password, ...sanitized } = updatedCa;
     return sanitized;
   }
   /**
@@ -192,8 +205,8 @@ export class CaService {
   /**
    * Find all Verified Firms - sorted by most recent
    */
-  async findVerified(): Promise<any> {
-    return this.caModel
+  async findVerified(): Promise<VerifiedCA[]> {
+     const response = await this.caModel
       .find({ isApproved: true })
       .sort({ createdAt: -1 })
       .select({
@@ -204,8 +217,9 @@ export class CaService {
         'plan_and_expertise.basic_services': 1,
         'plan_and_expertise.advanced_services': 1,
       })
-      .lean()
-      .exec();
+      .exec() as VerifiedCA[];
+    
+      return response
   }
 
   /**

@@ -1,8 +1,9 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { Role } from 'src/enum/enum';
 
 export class CaLoginDto {
   @IsString()
-  role: 'ca'; // literal type
+  role: Role.CA; // literal type
 
   @IsEmail({}, { message: 'Email must be valid' })
   email: string;

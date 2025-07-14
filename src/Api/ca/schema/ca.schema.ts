@@ -116,8 +116,8 @@ export class Ca {
   plan_and_expertise?: PlanAndExpertise;
 
   // Step 3: Signup/Login
-  @Prop({ unique: true })
-  email: string;
+  @Prop({ unique: true, sparse: true })
+  email?: string;
 
   @Prop({ select: false })
   password: string;

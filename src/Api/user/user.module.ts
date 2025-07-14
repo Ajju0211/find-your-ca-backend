@@ -6,6 +6,7 @@ import { User, UserSchema } from './schema/user.schema';
 import { Ca, CaSchema } from '../ca/schema/ca.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { MailModule } from 'src/emails/mail.module';
+import { CommonModule } from 'src/common/common.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { MailModule } from 'src/emails/mail.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' }, // Token expiration time
     }),
+    CommonModule
   ],
   controllers: [UserController],
   providers: [UserService],

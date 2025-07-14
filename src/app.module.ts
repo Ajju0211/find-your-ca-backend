@@ -23,7 +23,7 @@ import { ReviewsModule } from './Api/reviews/reviews.module';
       envFilePath: '.env', // optional, default is .env
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_DB_URL || 'mongodb://localhost:27017/your-default-db', // Use environment variable or default
+      process.env.MONGO_DB_URL || 'mongodb+srv://ajaysdoriyal:ajaysdoriyal@cluster0.iz0lg.mongodb.net/llm-blog-data?', // Use environment variable or default
     ),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'), // Path to the folder
