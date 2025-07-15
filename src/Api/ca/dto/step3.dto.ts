@@ -1,4 +1,4 @@
-import { IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class Step3Dto {
   @IsEmail()
@@ -8,7 +8,7 @@ export class Step3Dto {
   password: string;
 
   // ... other optional fields
-
+  @IsOptional()
   @IsString()
   tempId: string;
 

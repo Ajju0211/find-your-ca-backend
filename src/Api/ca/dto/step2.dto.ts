@@ -40,6 +40,7 @@ export class Step2Dto {
   @Type(() => Step2PlanDto)
   plan_and_expertise: Step2PlanDto;
 
+  @IsOptional()
   @IsString()
   tempId: string;
 
