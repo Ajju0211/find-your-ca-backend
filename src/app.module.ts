@@ -10,11 +10,11 @@ import { ContactModule } from './Api/contact-us/contact.module';
 import { TestimonialModule } from './Api/testimonial/testimonial.module';
 import { FiltersModule } from './Api/filters/filters.module';
 import { UserModule } from './Api/user/user.module';
-import { UploadModule } from './upload/upload.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { MailModule } from './emails/mail.module';
 import { ReviewsModule } from './Api/reviews/reviews.module';
+import { UploadModule } from './upload/upload.module';
 
 @Module({
   imports: [
@@ -23,7 +23,8 @@ import { ReviewsModule } from './Api/reviews/reviews.module';
       envFilePath: '.env', // optional, default is .env
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_DB_URL || 'mongodb+srv://ajaysdoriyal:ajaysdoriyal@cluster0.iz0lg.mongodb.net/llm-blog-data?', // Use environment variable or default
+      process.env.MONGO_DB_URL ||
+        'mongodb+srv://ajaysdoriyal:ajaysdoriyal@cluster0.iz0lg.mongodb.net/llm-blog-data?', // Use environment variable or default
     ),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'), // Path to the folder

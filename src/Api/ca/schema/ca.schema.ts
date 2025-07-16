@@ -55,7 +55,7 @@ class PartnershipForm extends CommonFields {
   firm_name: string;
 
   @Prop({ required: true })
-  partner_name: string;
+  sr_partner_name: string;
 }
 
 @Schema({ _id: false })
@@ -73,7 +73,7 @@ class LlpForm extends CommonFields {
   firm_name: string;
 
   @Prop({ required: true })
-  partner_name: string;
+  sr_partner_name: string;
 }
 
 // ====================== PLAN & EXPERTISE ======================

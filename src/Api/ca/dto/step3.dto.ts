@@ -7,8 +7,6 @@ export class Step3Dto {
   @IsString()
   password: string;
 
-  // ... other optional fields
-  @IsOptional()
   @IsString()
   tempId: string;
 

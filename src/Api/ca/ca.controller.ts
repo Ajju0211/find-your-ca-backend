@@ -30,6 +30,7 @@ export class CaController {
    */
   @Post('registration/step1')
   async fillFormStep1(@Body() body: Step1Dto) {
+    console.log('Hit Step1');
     const { type, form_data, ...rest } = body;
 
     // ✅ Validate form_data manually

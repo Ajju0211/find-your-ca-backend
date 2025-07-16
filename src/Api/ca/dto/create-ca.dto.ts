@@ -64,7 +64,7 @@ export class PartnershipFormDto extends CommonFieldsDto {
   firm_name: string;
 
   @IsString()
-  partner_name: string;
+  sr_partner_name: string;
 }
 
 export class AdvisoryFormDto extends CommonFieldsDto {
@@ -81,7 +81,7 @@ export class LlpFormDto extends CommonFieldsDto {
   firm_name: string;
 
   @IsString()
-  partner_name: string;
+  sr_partner_name: string;
 }
 
 // ====================== PLAN & EXPERTISE DTO ======================
