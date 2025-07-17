@@ -31,8 +31,17 @@ class CommonFields {
   @Prop({ required: true })
   pincode: string;
 
-  @Prop({ required: true })
-  profile_picture: string; // File URL or base64 path
+   @Prop({
+    type: {
+      imageUrl: { type: String, required: true },
+      imageId: { type: String, required: true },
+    },
+    required: true,
+  })
+  profile_picture: {
+    imageUrl: string;
+    imageId: string;
+  };
 }
 
 // ====================== FORM TYPES ======================

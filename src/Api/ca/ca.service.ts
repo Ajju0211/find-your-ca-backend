@@ -27,7 +27,7 @@ export class CaService {
    * Complete Step 3 of CA form - Signup/Login
    * This is called when user submits email/password after filling form
    */
-  async submitLoginCredentials(dto: Step3Dto): Promise<CaDocument> {
+  async submitLoginCredentials(dto: Step3Dto): Promise<StepResponse> {
     const ca = await this.caModel.findOne({ tempId: dto.tempId });
     if (!ca) throw new NotFoundException('Form not found');
 
@@ -47,10 +47,13 @@ export class CaService {
       },
     );
 
-    const response = (await this.caModel.findOne({
-      tempId: dto.tempId,
-    })) as CaDocument;
-    return response;
+    const response = {
+      success: true,
+      message: 'Successfully signup',
+      form_step_progress: 3,
+      completed_steps: [1, 2,3],
+    };
+    return  response;
   }
 
   /**
@@ -59,7 +62,7 @@ export class CaService {
   async submitFirmInfo(createCaDto: Step1Dto): Promise<StepResponse> {
     // Check if phone exists
     const phoneExists = await this.findByPhone(createCaDto.form_data.phone);
-    console.log(createCaDto.form_data.phone);
+    console.log("Phone Number: ",createCaDto.form_data.phone);
     if (phoneExists) {
       throw new BadRequestException('Phone number already in use');
     }

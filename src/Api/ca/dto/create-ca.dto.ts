@@ -14,6 +14,14 @@ import { CaFirmType, PlanType } from 'src/enum/enum';
 
 // ====================== COMMON FIELDS DTO ======================
 
+
+class ImageDto {
+  @IsString()
+  imageUrl: string;
+
+  @IsString()
+  imageId: string;
+}
 class CommonFieldsDto {
   @IsString()
   @Matches(/^[0-9]{10}$/)
@@ -42,8 +50,9 @@ class CommonFieldsDto {
   @IsString()
   location: string;
 
-  @IsString()
-  profile_picture: string;
+  @ValidateNested()
+  @Type(() => ImageDto)
+  profile_picture: ImageDto;
 }
 
 // ====================== FORM TYPES DTO ======================

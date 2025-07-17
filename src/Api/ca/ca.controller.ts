@@ -16,7 +16,7 @@ import { UpdateCaDto } from './dto/update-ca.dto';
 import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
 import { Step1Dto } from './dto/step1.dto';
-import { VerifiedCA } from './types/ca.types';
+import { StepResponse, VerifiedCA } from './types/ca.types';
 import { validateFormDataByType } from '../utils/validate-form-data';
 
 @Controller('ca')
@@ -30,7 +30,6 @@ export class CaController {
    */
   @Post('registration/step1')
   async fillFormStep1(@Body() body: Step1Dto) {
-    console.log('Hit Step1');
     const { type, form_data, ...rest } = body;
 
     // ✅ Validate form_data manually
@@ -63,7 +62,7 @@ export class CaController {
    * @desc Step 3 - Set email & password to complete registration
    */
   @Patch('/registration/step3')
-  async completeStep3(@Body() dto: Step3Dto): Promise<Ca> {
+  async completeStep3(@Body() dto: Step3Dto): Promise<StepResponse> {
     return this.caService.submitLoginCredentials(dto);
   }
 
