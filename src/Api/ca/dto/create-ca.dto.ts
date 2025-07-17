@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsBoolean,
+  IsDefined,
   IsEmail,
   IsEnum,
   IsNumber,
@@ -14,13 +15,12 @@ import { CaFirmType, PlanType } from 'src/enum/enum';
 
 // ====================== COMMON FIELDS DTO ======================
 
-
 class ImageDto {
   @IsString()
-  imageUrl: string;
+  url: string;
 
   @IsString()
-  imageId: string;
+  key: string;
 }
 class CommonFieldsDto {
   @IsString()
@@ -50,6 +50,7 @@ class CommonFieldsDto {
   @IsString()
   location: string;
 
+  @IsDefined()
   @ValidateNested()
   @Type(() => ImageDto)
   profile_picture: ImageDto;

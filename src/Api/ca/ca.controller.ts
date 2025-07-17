@@ -17,7 +17,7 @@ import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
 import { Step1Dto } from './dto/step1.dto';
 import { StepResponse, VerifiedCA } from './types/ca.types';
-import { validateFormDataByType } from '../utils/validate-form-data';
+import { validateFormDataByType } from '../../utils/validate-form-data';
 
 @Controller('ca')
 export class CaController {

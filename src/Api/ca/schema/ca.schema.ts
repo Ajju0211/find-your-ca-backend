@@ -31,10 +31,10 @@ class CommonFields {
   @Prop({ required: true })
   pincode: string;
 
-   @Prop({
+  @Prop({
     type: {
-      imageUrl: { type: String, required: true },
-      imageId: { type: String, required: true },
+      url: { type: String, required: true },
+      key: { type: String, required: true },
     },
     required: true,
   })
@@ -159,7 +159,7 @@ export class Ca {
   @Prop({ default: [], type: [String] })
   reviews: string[];
 
-  @Prop({ required: true, type: String })
+  @Prop({ required: true, unique: true })
   tempId: string; // Temporary ID for form progress
 
   @Prop({ required: true, type: Number, default: 1 })
@@ -167,6 +167,18 @@ export class Ca {
 
   @Prop({ type: [Number], default: [] })
   completed_steps: number[];
+
+  @Prop({ default: false })
+  emailVerified: boolean;
+
+  @Prop({ required: false })
+  emailOtp?: string;
+
+  @Prop({ required: false })
+  emailOtpExpiresAt?: Date;
+
+  @Prop({ required: false })
+  emailOtpRequestedAt?: Date;
 }
 
 export const CaSchema = SchemaFactory.createForClass(Ca);

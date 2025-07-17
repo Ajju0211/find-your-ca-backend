@@ -13,7 +13,11 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.use(cookieParser());
   app.setGlobalPrefix('api');

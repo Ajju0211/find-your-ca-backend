@@ -63,7 +63,7 @@ export class UploadService {
     }
 
     // ✅ Step 6: Generate a unique key for the image
-    const key = `images/${uuidv4()}.jpeg`; // Save as .jpeg regardless of original format
+    const key = `image-${uuidv4()}.jpeg`; // Save as .jpeg regardless of original format
 
     // ✅ Step 7: Upload to R2 with compressed buffer
     return this.uploadToR2(
@@ -141,7 +141,7 @@ export class UploadService {
       return {
         message: 'Uploaded successfully',
         key,
-        url: `${process.env.R2_PUBLIC_URL}/${key}`,
+        url: `${process.env.R2_PUBLIC_URL}/${this.bucket}/${key}`,
       };
     } catch (error) {
       console.error('❌ Upload to R2 failed:', error);

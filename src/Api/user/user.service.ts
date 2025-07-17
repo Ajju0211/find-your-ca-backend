@@ -8,16 +8,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User, UserDocument } from './schema/user.schema';
-import { LoginDto, TokenProps, UserInfo } from './types/types';
+import { LoginDto, UserInfo } from './types/types';
 import { JwtService } from '@nestjs/jwt';
 import { SafeAuthUser } from './types/types'; // Assuming this is defined in your types
-import { MailService } from 'src/emails/mail.service';
 import { CaDocument } from '../ca/schema/ca.schema';
 import { PasswordService } from 'src/common/service/password.service';
-import { CaLoginResponse, LoginResponse, UserLoginResponse } from './types/login-response.type';
+import {
+  CaLoginResponse,
+  LoginResponse,
+  UserLoginResponse,
+} from './types/login-response.type';
 import { UserLoginDto } from './dto/user-login.dto';
 import { CaLoginDto } from './dto/ca-login.dto';
-import { UserModule } from './user.module';
+
 import { CaModelType } from '../ca/types/ca.model.type';
 
 @Injectable()
@@ -27,8 +30,8 @@ export class UserService {
     @InjectModel('Ca') private caModel: Model<CaDocument>,
     private jwtService: JwtService,
     private readonly passwordService: PasswordService,
-    private readonly mailService: MailService, // Assuming you have a MailService for sending emails
-  ) { }
+    // Assuming you have a MailService for sending emails
+  ) {}
 
   generateToken(user: SafeAuthUser): string {
     return this.jwtService.sign(
@@ -85,7 +88,9 @@ export class UserService {
   }
 
   private async loginUser(body: UserLoginDto): Promise<UserLoginResponse> {
-    const user = await this.userModel.findOne({ phone: body.phone }) as UserInfo
+    const user = (await this.userModel.findOne({
+      phone: body.phone,
+    })) as UserInfo;
     if (!user) throw new UnauthorizedException('User not found');
     const token = this.generateToken({
       _id: user._id as Types.ObjectId,
@@ -97,10 +102,15 @@ export class UserService {
   }
 
   private async loginCA(body: CaLoginDto): Promise<CaLoginResponse> {
-    const user = await this.caModel.findOne({ email: body.email }).select('+password') as CaModelType
-      if(!user) throw new UnauthorizedException('CA not found');
+    const user = (await this.caModel
+      .findOne({ email: body.email })
+      .select('+password')) as CaModelType;
+    if (!user) throw new UnauthorizedException('CA not found');
 
-    const isMatch = await this.passwordService.verify(user.password as string, body.password);
+    const isMatch = await this.passwordService.verify(
+      user.password as string,
+      body.password,
+    );
     if (!isMatch) throw new UnauthorizedException('Invalid email or password');
 
     const token = this.generateToken({
@@ -111,5 +121,4 @@ export class UserService {
 
     return { token, user };
   }
-
 }

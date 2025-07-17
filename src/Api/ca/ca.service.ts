@@ -6,10 +6,9 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Ca, CaDocument } from './schema/ca.schema';
 import { Model, Types } from 'mongoose';
-
+import { v4 as uuidv4 } from 'uuid';
 import { UpdateCaDto } from './dto/update-ca.dto';
 import { Roles } from 'src/permissions/roles.decorator';
-import { MailService } from 'src/emails/mail.service';
 import { Step1Dto } from './dto/step1.dto';
 import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
@@ -20,7 +19,6 @@ export class CaService {
   constructor(
     @InjectModel(Ca.name) private readonly caModel: Model<CaDocument>,
     private readonly passwordService: PasswordService,
-    private readonly mailService: MailService, // Assuming you have a MailService for sending emails
   ) {}
 
   /**
@@ -51,9 +49,9 @@ export class CaService {
       success: true,
       message: 'Successfully signup',
       form_step_progress: 3,
-      completed_steps: [1, 2,3],
+      completed_steps: [1, 2, 3],
     };
-    return  response;
+    return response;
   }
 
   /**
@@ -62,13 +60,14 @@ export class CaService {
   async submitFirmInfo(createCaDto: Step1Dto): Promise<StepResponse> {
     // Check if phone exists
     const phoneExists = await this.findByPhone(createCaDto.form_data.phone);
-    console.log("Phone Number: ",createCaDto.form_data.phone);
+    console.log('Phone Number: ', createCaDto.form_data.phone);
     if (phoneExists) {
       throw new BadRequestException('Phone number already in use');
     }
 
+    const tempId = uuidv4();
     // ✅ Clean DTO to avoid undefined fields
-    const cleanData = JSON.parse(JSON.stringify(createCaDto)); // Removes undefined
+    const cleanData = JSON.parse(JSON.stringify({ ...createCaDto, tempId })); // Removes undefined
     console.log(cleanData);
     const caToSave = new this.caModel(cleanData);
     // caToSave.save();
@@ -76,7 +75,7 @@ export class CaService {
       success: true,
       message: 'Step 1 completed',
       form_step_progress: 1,
-      tempId: 'abc123',
+      tempId: caToSave.tempId,
     };
 
     return response;

@@ -6,7 +6,7 @@ import {
   IndividualFormDto,
   LlpFormDto,
   PartnershipFormDto,
-} from '../ca/dto/create-ca.dto';
+} from '../Api/ca/dto/create-ca.dto';
 import { BadRequestException } from '@nestjs/common';
 import { CaFirmType } from 'src/enum/enum';
 
