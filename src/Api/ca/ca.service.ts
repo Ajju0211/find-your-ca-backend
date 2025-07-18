@@ -21,23 +21,31 @@ export class CaService {
   constructor(
     @InjectModel(Ca.name) private readonly caModel: Model<CaDocument>,
     private readonly passwordService: PasswordService,
-  ) { }
+  ) {}
 
   /**
    * Complete Step 3 of CA form - Signup/Login
    * This is called when user submits email/password after filling form
    */
   async submitLoginCredentials(dto: Step3Dto): Promise<StepResponse> {
-    const exists   = await this.caModel.findOne({ email: dto.email }) as CaDocument;
-    if (exists.emailVerified) throw new ConflictException("Email already registered");
+    const exists = (await this.caModel.findOne({
+      email: dto.email,
+    })) as CaDocument;
+    if (exists?.emailVerified)
+      throw new ConflictException('Email already registered');
 
     const ca = await this.caModel.findOne({ tempId: dto.tempId });
     if (!ca) throw new NotFoundException('Form not found');
 
-    if(ca.email != dto.email) throw new BadRequestException("Email mismatch. Kindly use the email you previously registered with.")
+    if (ca.email != null && ca.email != dto.email)
+      throw new BadRequestException(
+        'Email mismatch. Kindly use the email you previously registered with.',
+      );
 
-    if (ca.emailVerified) {
-      throw new ForbiddenException('Email not verified. Please verify your email to continue.');
+    if (!ca?.emailVerified) {
+      throw new ForbiddenException(
+        'Email not verified. Please verify your email to continue.',
+      );
     }
 
     // ✅ Hash password
