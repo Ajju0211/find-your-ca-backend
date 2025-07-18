@@ -8,9 +8,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { v4 as uuidv4 } from 'uuid';
 import * as mime from 'mime-types';
-import * as dotenv from 'dotenv';
 import { PDFDocument } from 'pdf-lib';
-dotenv.config();
 
 @Injectable()
 export class UploadService {

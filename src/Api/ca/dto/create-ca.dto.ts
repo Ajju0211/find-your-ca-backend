@@ -79,7 +79,7 @@ export class PartnershipFormDto extends CommonFieldsDto {
 
 export class AdvisoryFormDto extends CommonFieldsDto {
   @IsString()
-  advisory_name: string;
+  firm_name: string;
 
   @IsOptional()
   @IsString()

@@ -69,8 +69,10 @@ class PartnershipForm extends CommonFields {
 
 @Schema({ _id: false })
 class AdvisoryForm extends CommonFields {
-  @Prop({ required: true })
-  advisory_name: string;
+  // @Prop({ required: true })
+  // advisory_name: string;
+  @Prop({required: true})
+  firm_name: string;
 
   @Prop()
   incharge?: string;

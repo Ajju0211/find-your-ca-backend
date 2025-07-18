@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -17,12 +18,16 @@ export class EmailService {
   constructor(@InjectModel(Ca.name) private caModel: Model<CaDocument>) {}
 
   async sendEmailOtp({ tempId, email }: SendOtpDto) {
+
+    const registeredCa = await this.caModel.findOne({email});
+    if(registeredCa?.email) throw new ConflictException('Email is already registered')
+
     const ca = await this.caModel.findOne({ tempId });
-    if (!ca) throw new NotFoundException('CA not found');
+    if (!ca?.email) throw new NotFoundException('CA not found');
 
     // Strong, secure 6-digit OTP
     const otp = randomInt(100000, 999999).toString(); // 6-digit, non-predictable
-
+    ca.email = email
     ca.emailOtp = otp;
     ca.emailOtpExpiresAt = new Date(Date.now() + 1 * 60 * 3000); // 3 minute
     ca.emailOtpRequestedAt = new Date();
