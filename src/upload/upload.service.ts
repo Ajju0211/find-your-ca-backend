@@ -53,7 +53,7 @@ export class UploadService {
     try {
       compressedBuffer = await sharp(file.buffer)
         .resize({ width: 1280 }) // Optional: resize width
-        .toFormat('jpeg', { quality: 75 }) // Force JPEG with 75% quality
+        .toFormat('avif', { quality: 75 }) // Force JPEG with 75% quality
         .toBuffer();
     } catch (err) {
       console.error('❌ Image compression failed:', err);
