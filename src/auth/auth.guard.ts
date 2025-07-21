@@ -24,6 +24,7 @@ export class AuthGuard implements CanActivate {
     @InjectModel(Ca.name) private readonly caModel: Model<CaDocument>,
   ) {}
 
+  
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),

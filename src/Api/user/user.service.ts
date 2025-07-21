@@ -124,7 +124,7 @@ export class UserService {
   }
 
   // Add this inside the class
-  private async loginCAWithOtp(body: CaLoginOtpDto): Promise<CaLoginResponse> {
+   async loginCAWithOtp(body: CaLoginOtpDto): Promise<CaLoginResponse> {
     const ca = (await this.caModel.findOne({
       'form_data.phone': body.phone,
     })) as CaModelType;
