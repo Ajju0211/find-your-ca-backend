@@ -37,13 +37,13 @@ export class UserService {
   generateToken(user: SafeAuthUser): string {
     return this.jwtService.sign(
       {
-        sub: user._id,
+        id: user._id,
         role: user.role,
         phone: user.phone,
         email: user.email,
       },
       {
-        secret: process.env.JWT_SECRET || 'YourSecretKey', // Use a secure secret key
+        secret: process.env.JWT_SECRET, // Use a secure secret key
         expiresIn: '7d', // Token expiration time
         algorithm: 'HS256',
       },
@@ -102,17 +102,30 @@ export class UserService {
     return { token, user }; // shape according to UserLoginResponse
   }
 
-  private async loginCA(body: CaLoginDto): Promise<CaLoginResponse> {
-    const user = (await this.caModel
+  private async loginCA(body: CaLoginDto): Promise<UserLoginResponse> {
+    const user = await this.caModel
       .findOne({ email: body.email })
-      .select('+password')) as CaModelType;
+      .select('+password')
+      .lean();
+
     if (!user) throw new UnauthorizedException('CA not found');
+
+    // const responseData = (await this.caModel.findOne({
+    //   email: body.email,
+    // })) as CaModelType;
 
     const isMatch = await this.passwordService.verify(
       user.password as string,
       body.password,
     );
-    if (!isMatch) throw new UnauthorizedException('Invalid email or password');
+
+    const { password, ...userWithoutPassword } = user.toObject
+      ? user.toObject()
+      : user;
+    if (user)
+      if (!isMatch)
+        // const response = userWithoutPassword as CaModelType
+        throw new UnauthorizedException('Invalid email or password');
 
     const token = this.generateToken({
       _id: user._id as Types.ObjectId,
@@ -120,11 +133,11 @@ export class UserService {
       phone: user.form_data.phone,
     });
 
-    return { token, user };
+    return { token, user: userWithoutPassword };
   }
 
   // Add this inside the class
-   async loginCAWithOtp(body: CaLoginOtpDto): Promise<CaLoginResponse> {
+  async loginCAWithOtp(body: CaLoginOtpDto): Promise<CaLoginResponse> {
     const ca = (await this.caModel.findOne({
       'form_data.phone': body.phone,
     })) as CaModelType;

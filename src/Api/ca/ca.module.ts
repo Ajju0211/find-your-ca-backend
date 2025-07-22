@@ -5,14 +5,19 @@ import { CaService } from './ca.service';
 import { Ca, CaSchema } from './schema/ca.schema';
 import { MailModule } from 'src/emails/mail.module';
 import { CommonModule } from 'src/common/common.module';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthModule } from 'src/auth/auth.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Ca.name, schema: CaSchema }]),
     MailModule,
-    CommonModule
+    CommonModule,
+    AuthModule,
+    UserModule,
   ],
-  providers: [CaService],
+  providers: [CaService, AuthGuard],
   controllers: [CaController],
   exports: [MongooseModule],
 })

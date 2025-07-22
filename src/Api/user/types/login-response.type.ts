@@ -1,14 +1,13 @@
-
 // ==========================
 // Final CA Login Response
 
-import { Types } from "mongoose";
-import { CaModelType } from "src/Api/ca/types/ca.model.type";
+import { Types } from 'mongoose';
+import { CaModelType } from 'src/Api/ca/types/ca.model.type';
 
 // ==========================
 export interface CaLoginResponse {
   token: string;
-  user: CaModelType
+  user: CaModelType;
 }
 
 //User login response
@@ -22,4 +21,4 @@ export interface UserLoginResponse {
   };
 }
 
-export type LoginResponse = CaLoginResponse | UserLoginResponse
+export type LoginResponse = CaLoginResponse | UserLoginResponse;

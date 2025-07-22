@@ -6,6 +6,7 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { merge } from 'lodash';
 import { Ca, CaDocument } from './schema/ca.schema';
 import { Model } from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
@@ -31,8 +32,8 @@ export class CaService {
     const exists = (await this.caModel.findOne({
       email: dto.email,
     })) as CaDocument;
-    if (exists?.emailVerified)
-      throw new ConflictException('Email already registered');
+    if (!exists?.emailVerified)
+      throw new ConflictException('Email is not verified');
 
     const ca = await this.caModel.findOne({ tempId: dto.tempId });
     if (!ca) throw new NotFoundException('Form not found');
@@ -175,6 +176,7 @@ export class CaService {
     const { password, ...sanitized } = updatedCa;
     return sanitized;
   }
+
   /**
    * 🔍 Find CA form by temporary ID (used for anonymous form resume)
    *
@@ -204,15 +206,20 @@ export class CaService {
    * @returns Updated CA or throws if not found
    */
   async updateCa(id: string, dto: UpdateCaDto): Promise<Ca> {
-    const updated = await this.caModel.findByIdAndUpdate(id, dto, {
-      new: true,
-    });
+    const existing = await this.caModel.findById(id);
 
-    if (!updated) {
+    if (!existing) {
       throw new NotFoundException('CA not found');
     }
 
-    return updated;
+    // Deep merge: keep existing data unless overwritten by dto
+    const mergedData = merge({}, existing.toObject(), dto);
+
+    const updated = await this.caModel.findByIdAndUpdate(id, mergedData, {
+      new: true,
+    });
+
+    return updated as Ca;
   }
 
   /**

@@ -19,10 +19,10 @@ import { CommonModule } from 'src/common/common.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' }, // Token expiration time
     }),
-    CommonModule
+    CommonModule,
   ],
   controllers: [UserController],
   providers: [UserService],
-  exports: [UserService], // optional: export if other modules need it
+  exports: [UserService, MongooseModule], // optional: export if other modules need it
 })
 export class UserModule {}

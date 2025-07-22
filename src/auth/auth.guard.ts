@@ -24,7 +24,6 @@ export class AuthGuard implements CanActivate {
     @InjectModel(Ca.name) private readonly caModel: Model<CaDocument>,
   ) {}
 
-  
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
       context.getHandler(),
@@ -45,11 +44,11 @@ export class AuthGuard implements CanActivate {
     }
 
     const [, token] = authorization.split(' ');
-
     try {
-      const payload = await this.jwtService.verifyAsync(token, {
+      const payload = await this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+      console.log('payload', payload);
 
       this.logger.log(`Token verified. Payload: ${JSON.stringify(payload)}`);
 

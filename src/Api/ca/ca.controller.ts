@@ -9,6 +9,8 @@ import {
   Post,
   Query,
   Req,
+  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CaService } from './ca.service';
 import { Ca } from './schema/ca.schema';
@@ -18,6 +20,7 @@ import { Step2Dto } from './dto/step2.dto';
 import { Step1Dto } from './dto/step1.dto';
 import { StepResponse, VerifiedCA } from './types/ca.types';
 import { validateFormDataByType } from '../../utils/validate-form-data';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('ca')
 export class CaController {
@@ -80,7 +83,21 @@ export class CaController {
    * @desc Updates CA firm data by MongoDB _id (used post-registration)
    */
   @Patch('update/:id')
-  async updateCa(@Param('id') id: string, @Body() updateCaDto: UpdateCaDto) {
+  @UseGuards(AuthGuard)
+  async updateCa(
+    @Param('id') id: string,
+    @Body() updateCaDto: UpdateCaDto,
+    @Req() req: any, // Inject request to access req.user
+  ) {
+    // Ensure logged-in user is only updating their own data
+    const loggedInUserId = req.user?._id?.toString();
+    // console.log('authId: ', loggedInUserId, 'Id: ', id);
+    if (id !== loggedInUserId) {
+      throw new UnauthorizedException(
+        'You are not allowed to update this user',
+      );
+    }
+
     return this.caService.updateCa(id, updateCaDto);
   }
 
