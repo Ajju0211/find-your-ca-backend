@@ -17,6 +17,7 @@ import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
 import { PasswordService } from 'src/common/service/password.service';
 import { StepResponse, VerifiedCA } from './types/ca.types';
+import { flattenObject } from 'src/utils/flattenObject';
 @Injectable()
 export class CaService {
   constructor(
@@ -148,12 +149,13 @@ export class CaService {
       throw new NotFoundException(`CA firm with id ${id} not found`);
     }
 
-    // Optional: prevent updating email/phone to one that already exists
+    // Check for email duplication
     if (updateCaDto.email && updateCaDto.email !== ca.email) {
       const emailExists = await this.findByEmail(updateCaDto.email);
       if (emailExists) throw new BadRequestException('Email already taken');
     }
 
+    // Check for phone duplication
     if (
       updateCaDto.form_data?.phone &&
       updateCaDto.form_data.phone !== ca.form_data.phone
@@ -162,10 +164,12 @@ export class CaService {
       if (phoneExists) throw new BadRequestException('Phone already in use');
     }
 
-    // Perform update
-    await this.caModel.updateOne({ _id: id }, { $set: updateCaDto });
+    // 🔥 Flatten the object to apply dot notation update
+    const flattened = flattenObject(updateCaDto);
 
-    // Get updated CA without password
+    await this.caModel.updateOne({ _id: id }, { $set: flattened });
+
+    // Get updated CA
     const updatedCa = await this.caModel.findById(id).lean<Ca>();
     if (!updatedCa) {
       throw new NotFoundException(

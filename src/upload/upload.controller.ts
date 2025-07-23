@@ -6,9 +6,12 @@ import {
   UseInterceptors,
   Param,
   UploadedFiles,
-  
 } from '@nestjs/common';
-import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import {
+  AnyFilesInterceptor,
+  FileInterceptor,
+  FilesInterceptor,
+} from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { ApiTags, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 
@@ -17,27 +20,29 @@ import { ApiTags, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-// ✅ Upload single or multiple images (auto-detect)
-@Post('image')
-@UseInterceptors(AnyFilesInterceptor()) // <-- handles both single and multiple
-@ApiConsumes('multipart/form-data')
-@ApiBody({
-  schema: {
-    type: 'object',
-    properties: {
-      image: {
-        type: 'array',
-        items: {
-          type: 'string',
-          format: 'binary',
+  // ✅ Upload single or multiple images (auto-detect)
+  @Post('image')
+  @UseInterceptors(AnyFilesInterceptor()) // <-- handles both single and multiple
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        image: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+          },
         },
       },
     },
-  },
-})
-async uploadImages(@UploadedFiles() files: Express.Multer.File[] | Express.Multer.File) {
-  return this.uploadService.uploadImageToR2(files);
-}
+  })
+  async uploadImages(
+    @UploadedFiles() files: Express.Multer.File[] | Express.Multer.File,
+  ) {
+    return this.uploadService.uploadImageToR2(files);
+  }
 
   // 🗑 Delete image
   @Delete('image/:key')
@@ -66,7 +71,7 @@ async uploadImages(@UploadedFiles() files: Express.Multer.File[] | Express.Multe
   }
 
   // 🗑 Delete file
-  @Delete('file/:key')
+  @Delete('files/:key')
   @ApiParam({ name: 'key', description: 'File key' })
   async deleteFile(@Param('key') key: string) {
     return this.uploadService.deleteFromR2(`files/${key}`);
