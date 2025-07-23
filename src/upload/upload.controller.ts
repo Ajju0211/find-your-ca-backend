@@ -5,9 +5,10 @@ import {
   UploadedFile,
   UseInterceptors,
   Param,
+  UploadedFiles,
   
 } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { AnyFilesInterceptor, FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { UploadService } from './upload.service';
 import { ApiTags, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 
@@ -16,24 +17,27 @@ import { ApiTags, ApiBody, ApiConsumes, ApiParam } from '@nestjs/swagger';
 export class UploadController {
   constructor(private readonly uploadService: UploadService) {}
 
-  // ✅ Upload image only
-  @Post('image')
-  @UseInterceptors(FileInterceptor('image'))
-  @ApiConsumes('multipart/form-data')
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        image: {
+// ✅ Upload single or multiple images (auto-detect)
+@Post('image')
+@UseInterceptors(AnyFilesInterceptor()) // <-- handles both single and multiple
+@ApiConsumes('multipart/form-data')
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      image: {
+        type: 'array',
+        items: {
           type: 'string',
           format: 'binary',
         },
       },
     },
-  })
-  async uploadImage(@UploadedFile() image: Express.Multer.File) {
-    return this.uploadService.uploadImageToR2(image); // <-- clean, type-safe
-  }
+  },
+})
+async uploadImages(@UploadedFiles() files: Express.Multer.File[] | Express.Multer.File) {
+  return this.uploadService.uploadImageToR2(files);
+}
 
   // 🗑 Delete image
   @Delete('image/:key')

@@ -108,8 +108,8 @@ export class UpdatePlanAndExpertiseDto {
   features?: string[];
 
   @IsOptional()
-  @IsString()
-  industry?: string;
+  @IsArray()
+  industry?: string[];
 
   @IsOptional()
   @IsArray()

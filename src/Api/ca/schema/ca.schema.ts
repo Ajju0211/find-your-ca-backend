@@ -101,7 +101,7 @@ class PlanAndExpertise {
   features: string[];
 
   @Prop({ required: true })
-  industry: string;
+  industry: string[];
 
   @Prop({ type: [String], required: true })
   basic_services: string[];

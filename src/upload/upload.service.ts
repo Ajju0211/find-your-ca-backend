@@ -29,50 +29,61 @@ export class UploadService {
   }
 
   // ✅ Upload image only
-  async uploadImageToR2(file: Express.Multer.File) {
-    // ✅ Step 1: Validate MIME type to ensure it's an image
-    if (!file.mimetype.startsWith('image/')) {
-      throw new InternalServerErrorException('Only image files are allowed.');
-    }
+ // ✅ Upload one or more images to R2
+async uploadImageToR2(fileOrFiles: Express.Multer.File | Express.Multer.File[]) {
+  const files = Array.isArray(fileOrFiles) ? fileOrFiles : [fileOrFiles];
 
-    // ✅ Step 2: Get file extension based on MIME type
-    const fileExt = mime.extension(file.mimetype) || 'bin';
+  const results = await Promise.all(
+    files.map(async (file) => {
+      // ✅ Step 1: Validate MIME type to ensure it's an image
+      if (!file.mimetype.startsWith('image/')) {
+        throw new InternalServerErrorException('Only image files are allowed.');
+      }
 
-    // ✅ Step 3: Define a whitelist of allowed profile image extensions
-    const allowedExts = ['jpg', 'jpeg', 'png'];
+      // ✅ Step 2: Get file extension based on MIME type
+      const fileExt = mime.extension(file.mimetype) || 'bin';
 
-    // ✅ Step 4: If the extension is not in the allowed list, reject
-    if (!allowedExts.includes(fileExt)) {
-      throw new InternalServerErrorException(
-        `Only ${allowedExts.join(', ').toUpperCase()} images are allowed.`,
+      // ✅ Step 3: Define a whitelist of allowed profile image extensions
+      const allowedExts = ['jpg', 'jpeg', 'png'];
+
+      // ✅ Step 4: If the extension is not in the allowed list, reject
+      if (!allowedExts.includes(fileExt)) {
+        throw new InternalServerErrorException(
+          `Only ${allowedExts.join(', ').toUpperCase()} images are allowed.`,
+        );
+      }
+
+      // ✅ Step 5: Compress the image with sharp (resize + quality control)
+      let compressedBuffer: Buffer;
+      try {
+        compressedBuffer = await sharp(file.buffer)
+          .resize({ width: 1280 }) // Optional: resize width
+          .toFormat('avif', { quality: 75 }) // Convert to AVIF
+          .toBuffer();
+      } catch (err) {
+        console.error('❌ Image compression failed:', err);
+        throw new InternalServerErrorException('Image compression failed');
+      }
+
+      // ✅ Step 6: Generate a unique key for the image
+      const key = `image-${uuidv4()}.jpeg`; // Save as .jpeg regardless of original format
+
+      // ✅ Step 7: Upload to R2 with compressed buffer
+      return this.uploadToR2(
+        {
+          ...file,
+          buffer: compressedBuffer,
+          mimetype: 'image/jpeg',
+        },
+        key,
       );
-    }
+    }),
+  );
 
-    // ✅ Step 5: Compress the image with sharp (resize + quality control)
-    let compressedBuffer: Buffer;
-    try {
-      compressedBuffer = await sharp(file.buffer)
-        .resize({ width: 1280 }) // Optional: resize width
-        .toFormat('avif', { quality: 75 }) // Force JPEG with 75% quality
-        .toBuffer();
-    } catch (err) {
-      console.error('❌ Image compression failed:', err);
-      throw new InternalServerErrorException('Image compression failed');
-    }
+  // ✅ Return single or multiple depending on input
+  return Array.isArray(fileOrFiles) ? results : results[0];
+}
 
-    // ✅ Step 6: Generate a unique key for the image
-    const key = `image-${uuidv4()}.jpeg`; // Save as .jpeg regardless of original format
-
-    // ✅ Step 7: Upload to R2 with compressed buffer
-    return this.uploadToR2(
-      {
-        ...file,
-        buffer: compressedBuffer,
-        mimetype: 'image/jpeg',
-      },
-      key,
-    );
-  }
 
   // ✅ Upload general file only (non-images)
   async uploadFileToR2(file: Express.Multer.File) {

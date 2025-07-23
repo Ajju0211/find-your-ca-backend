@@ -107,8 +107,8 @@ export class PlanAndExpertiseDto {
   @IsString({ each: true })
   features: string[];
 
-  @IsString()
-  industry: string;
+  @IsArray()
+  industry: string[];
 
   @IsArray()
   @IsString({ each: true })

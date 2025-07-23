@@ -21,8 +21,8 @@ export class Step2PlanDto {
   @IsString({ each: true })
   features: string[];
 
-  @IsString()
-  industry: string;
+  @IsArray()
+  industry: string[];
 
   @IsArray()
   @IsString({ each: true })
