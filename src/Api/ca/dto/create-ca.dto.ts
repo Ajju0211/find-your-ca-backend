@@ -15,7 +15,7 @@ import { CaFirmType, PlanType } from 'src/enum/enum';
 
 // ====================== COMMON FIELDS DTO ======================
 
-class ImageDto {
+export class ImageDto {
   @IsString()
   url: string;
 

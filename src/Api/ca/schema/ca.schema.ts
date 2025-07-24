@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Schema as MongooseSchema } from 'mongoose';
+import { Document, Schema as MongooseSchema, SchemaTypes } from 'mongoose';
 import { CaFirmType, PlanType } from 'src/enum/enum';
 
 export type CaDocument = Ca & Document;
@@ -71,7 +71,7 @@ class PartnershipForm extends CommonFields {
 class AdvisoryForm extends CommonFields {
   // @Prop({ required: true })
   // advisory_name: string;
-  @Prop({required: true})
+  @Prop({ required: true })
   firm_name: string;
 
   @Prop()
@@ -139,10 +139,10 @@ export class Ca {
   @Prop()
   cop_number?: string;
 
-  @Prop({ type: [String], default: [] })
-  documents?: string[];
+  @Prop({ type: [SchemaTypes.Mixed], default: [] })
+  documents?: (string | number | Record<string, any>)[];
 
-  @Prop({ type: [String], default: [] })
+  @Prop({ type: [SchemaTypes.Mixed], default: [] })
   gallery?: string[];
 
   // Optional: Roles / Status

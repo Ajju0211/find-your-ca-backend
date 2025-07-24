@@ -178,12 +178,15 @@ export class UploadService {
   // ✅ Delete from R2
   async deleteFromR2(key: string) {
     try {
-      await this.s3.send(
+      console.log('bucket', this.bucket, 'key', key);
+      const response = await this.s3.send(
         new DeleteObjectCommand({
           Bucket: this.bucket,
           Key: key,
         }),
       );
+
+      console.log('Response', response);
 
       return {
         message: 'Deleted successfully',

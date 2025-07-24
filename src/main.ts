@@ -15,9 +15,12 @@ async function bootstrap() {
   });
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
       transform: true,
     }),
   );
+
   app.use('/uploads', express.static(join(__dirname, '..', 'uploads')));
   app.use(cookieParser());
   app.setGlobalPrefix('api');

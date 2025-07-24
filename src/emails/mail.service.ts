@@ -19,7 +19,8 @@ export class EmailService {
 
   async sendEmailOtp({ tempId, email }: SendOtpDto) {
     const emailExists = await this.caModel.findOne({ email });
-    if (emailExists) throw new ConflictException('Email already exits');
+    if (emailExists?.emailVerified)
+      throw new ConflictException('Email already exits');
     const ca = await this.caModel.findOne({ tempId });
     if (!ca) throw new NotFoundException('CA not found');
     // Strong, secure 6-digit OTP

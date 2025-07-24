@@ -48,7 +48,7 @@ export class UploadController {
   @Delete('image/:key')
   @ApiParam({ name: 'key', description: 'Image file key' })
   async deleteImage(@Param('key') key: string) {
-    return this.uploadService.deleteFromR2(`images/${key}`);
+    return this.uploadService.deleteFromR2(`${key}`);
   }
 
   // ✅ Upload general file (not image)

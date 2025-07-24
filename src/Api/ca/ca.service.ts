@@ -17,7 +17,7 @@ import { Step3Dto } from './dto/step3.dto';
 import { Step2Dto } from './dto/step2.dto';
 import { PasswordService } from 'src/common/service/password.service';
 import { StepResponse, VerifiedCA } from './types/ca.types';
-import { flattenObject } from 'src/utils/flattenObject';
+
 @Injectable()
 export class CaService {
   constructor(
@@ -165,9 +165,8 @@ export class CaService {
     }
 
     // 🔥 Flatten the object to apply dot notation update
-    const flattened = flattenObject(updateCaDto);
 
-    await this.caModel.updateOne({ _id: id }, { $set: flattened });
+    await this.caModel.updateOne({ _id: id }, { $set: updateCaDto });
 
     // Get updated CA
     const updatedCa = await this.caModel.findById(id).lean<Ca>();

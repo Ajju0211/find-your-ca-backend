@@ -138,15 +138,15 @@ export class UserService {
 
   // Add this inside the class
   async loginCAWithOtp(body: CaLoginOtpDto): Promise<CaLoginResponse> {
-    console.log(body.phone)
+    console.log(body.phone);
     const ca = (await this.caModel.findOne({
       'form_data.phone': body.phone,
     })) as CaModelType;
     if (!ca) throw new UnauthorizedException('CA not found');
 
     // Replace this with your actual OTP verification logic
-    const isOtpValid = body.otp === '123456'; // Example OTP check
-    if (!isOtpValid) throw new UnauthorizedException('Invalid OTP');
+    // const isOtpValid = body.otp === '123456'; // Example OTP check
+    // if (!isOtpValid) throw new UnauthorizedException('Invalid OTP');
 
     const token = this.generateToken({
       _id: ca._id as Types.ObjectId,

@@ -11,8 +11,18 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CaFirmType, PlanType } from 'src/enum/enum';
+import { ImageDto } from './create-ca.dto';
 
 // ====================== COMMON FIELDS DTO ======================
+
+class UploadedFileMeta {
+  url: string;
+  key: string;
+  name: string;
+  size: number;
+  mimeType: string;
+  extension: string;
+}
 
 class UpdateCommonFieldsDto {
   @IsOptional()
@@ -161,13 +171,11 @@ export class UpdateCaDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  documents?: string[];
+  documents?: UploadedFileMeta[];
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  gallery?: string[];
+  gallery?: ImageDto[];
 
   @IsOptional()
   @IsString()
