@@ -21,8 +21,12 @@ export class ImageDto {
 
   @IsString()
   key: string;
+
+  @IsNumber()
+  size: number;
 }
-class CommonFieldsDto {
+
+export class CommonFieldsDto {
   @IsString()
   @Matches(/^[0-9]{10}$/)
   phone: string;
@@ -162,8 +166,9 @@ export class CreateCaDto {
 
   @IsOptional()
   @IsArray()
-  @IsString({ each: true })
-  gallery?: string[];
+  @ValidateNested({ each: true })
+  @Type(() => ImageDto)
+  gallery?: ImageDto[];
 
   @IsOptional()
   @IsString()

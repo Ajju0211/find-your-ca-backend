@@ -149,10 +149,10 @@ export class Ca {
   @Prop({ default: 'ca' })
   role: string;
 
-  @Prop({ default: false })
+  @Prop()
   website: string;
 
-  @Prop({ default: false })
+  @Prop()
   about_us: string;
 
   @Prop({ default: false })

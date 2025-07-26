@@ -11,7 +11,9 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { CaFirmType, PlanType } from 'src/enum/enum';
-import { ImageDto } from './create-ca.dto';
+import { CommonFieldsDto, ImageDto } from './create-ca.dto';
+import { getUpdatedFormDtoClass } from 'src/utils/form-type-mapper';
+import { PartialType } from '@nestjs/swagger';
 
 // ====================== COMMON FIELDS DTO ======================
 
@@ -24,37 +26,7 @@ class UploadedFileMeta {
   extension: string;
 }
 
-class UpdateCommonFieldsDto {
-  @IsOptional()
-  @IsString()
-  @Matches(/^[0-9]{10}$/)
-  phone?: string;
-
-  @IsOptional()
-  @IsString()
-  alternative_phone?: string;
-
-  @IsOptional()
-  @IsString()
-  main_address?: string;
-
-  @IsOptional()
-  @IsString()
-  alternative_address?: string;
-
-  @IsOptional()
-  @IsString()
-  city?: string;
-
-  @IsOptional()
-  @IsString()
-  pincode?: string;
-
-  @IsOptional()
-  @IsString()
-  profile_picture?: string;
-}
-
+export class UpdateCommonFieldsDto extends PartialType(CommonFieldsDto) {}
 // ====================== FORM TYPES DTO ======================
 
 export class UpdateIndividualFormDto extends UpdateCommonFieldsDto {
@@ -141,8 +113,8 @@ export class UpdateCaDto {
 
   @IsOptional()
   @ValidateNested()
-  @Type(() => Object)
-  form_data?:
+  @Type((obj) => getUpdatedFormDtoClass(obj?.object?.type)) // you already wrote this helper
+  form_data:
     | UpdateIndividualFormDto
     | UpdatePartnershipFormDto
     | UpdateAdvisoryFormDto
@@ -175,6 +147,8 @@ export class UpdateCaDto {
 
   @IsOptional()
   @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ImageDto)
   gallery?: ImageDto[];
 
   @IsOptional()
@@ -189,8 +163,15 @@ export class UpdateCaDto {
   @IsString()
   tempId: string;
 
+  @IsOptional()
+  @IsString()
+  website?: string;
   // ✅ NEW: Step progress (1, 2, 3, etc.)
   @IsOptional()
   @IsNumber()
   form_step_progress: number;
+
+  @IsOptional()
+  @IsString()
+  about_us?: string;
 }

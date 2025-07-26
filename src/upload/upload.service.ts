@@ -168,6 +168,7 @@ export class UploadService {
         message: 'Uploaded successfully',
         key,
         url: `${process.env.R2_PUBLIC_URL}/${this.bucket}/${key}`,
+        size: file.buffer.length,
       };
     } catch (error) {
       console.error('❌ Upload to R2 failed:', error);

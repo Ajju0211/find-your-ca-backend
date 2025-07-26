@@ -149,13 +149,13 @@ export class CaService {
       throw new NotFoundException(`CA firm with id ${id} not found`);
     }
 
-    // Check for email duplication
+    // ✅ Email duplication check
     if (updateCaDto.email && updateCaDto.email !== ca.email) {
       const emailExists = await this.findByEmail(updateCaDto.email);
       if (emailExists) throw new BadRequestException('Email already taken');
     }
 
-    // Check for phone duplication
+    // ✅ Phone duplication check
     if (
       updateCaDto.form_data?.phone &&
       updateCaDto.form_data.phone !== ca.form_data.phone
@@ -164,11 +164,18 @@ export class CaService {
       if (phoneExists) throw new BadRequestException('Phone already in use');
     }
 
-    // 🔥 Flatten the object to apply dot notation update
+    // ✅ Separate gallery from rest of the update payload
+    const { gallery, ...rest } = updateCaDto;
 
-    await this.caModel.updateOne({ _id: id }, { $set: updateCaDto });
+    // ✅ Flatten remaining update payload (if needed)
+    await this.caModel.updateOne({ _id: id }, { $set: rest });
 
-    // Get updated CA
+    // ✅ Specifically update gallery if it's provided
+    if (gallery) {
+      await this.caModel.updateOne({ _id: id }, { $set: { gallery } });
+    }
+
+    // ✅ Get updated CA
     const updatedCa = await this.caModel.findById(id).lean<Ca>();
     if (!updatedCa) {
       throw new NotFoundException(
@@ -215,9 +222,19 @@ export class CaService {
       throw new NotFoundException('CA not found');
     }
 
-    // Deep merge: keep existing data unless overwritten by dto
+    // Step 1: Deep merge everything
     const mergedData = merge({}, existing.toObject(), dto);
 
+    // Step 2: Explicitly override arrays (replace instead of merge)
+    if ('gallery' in dto) {
+      mergedData.gallery = dto.gallery;
+    }
+
+    if ('documents' in dto) {
+      mergedData.documents = dto.documents;
+    }
+
+    // Step 3: Update and return
     const updated = await this.caModel.findByIdAndUpdate(id, mergedData, {
       new: true,
     });
